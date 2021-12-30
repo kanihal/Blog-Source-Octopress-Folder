@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Codebrowser setup</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../css/sp.css">
+</head>
+
+<body>
+  <h1>Codebrowser(woboq) setup for C/C++ code</h1>
+
+  <h2 id="install">1. Install codebrowser <a href="#install"></a></h2>
+  <p>
+    First, we need to install codebrowser along with dependancies. We can install from binary (.deb) file at <a
+      href="https://software.opensuse.org/download/package?project=home:pansenmann:woboq&package=woboq-codebrowser">this
+      link</a>. Note that the binary available at this location is an old build.
+
+  </p>
+  <pre><code>sudo dpkg -i woboq-codebrowser_2.1_amd64.deb
+sudo apt install libtinfo5
+</code></pre>
+  <p>
+    OR
+    <br>
+    We can build it using the source code,
+  </p>
+  <pre><code>sudo apt install  llvm-7 clang-7 libclang-7-dev</code></pre>
+
+  <!-- <pre><code>bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"</code></pre> -->
+
+  <pre><code>git clone https://github.com/KDAB/codebrowser.git
+cd codebrowser
+cmake . -DCMAKE_BUILD_TYPE=Release
+make
+sudo make install
+</code></pre>
+  <p>
+    For woboq enhancements, please refer to <a href="https://github.com/KDAB/codebrowser/issues/88">Deployment Tips</a>
+  </p>
+
+  <h2 id="compilecommands">2. Generate compile_commands.json <a href="#compilecommands"></a></h2>
+  <p>
+    The next most <b>important</b> thing is to generate <code>compile_commands.json</code> for our project.
+    For woboq tools, the format of compile_commands.json entry should of the following template:
+  </p>
+  <pre><code>{
+    "directory": "/home/user/dev/llvm/build",
+    "file": "/home/user/dev/llvm/llvm/lib/Support/APFloat.cpp",
+    "command": "/usr/bin/g++ ... /dev/llvm/llvm/lib/Support/APFloat.cpp"
+}</code></pre>
+  <p>
+    Note that woboq currently doesn't support the latest format of compile_commands entries with <code>output</code>
+    field as shown below,
+  </p>
+  <pre><code>{
+  "directory": "/home/user/dev/llvm/build",
+  "file": "/tmp/foo.cpp",
+  "output": "foo.o",
+  "arguments": ["/usr/bin/g++", ... ]
+}</code></pre>
+  <ul>
+    <li>
+      For CMAKE projects, we can use the following while building
+      <pre><code>cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON . </code></pre>
+    </li>
+
+    <li>
+      For MAKEFILE projects, we can use <a href="https://github.com/rizsotto/Bear">Bear</a> (Build EAR)
+      tool generate compile_commands.json,
+      <pre><code>sudo apt install bear</code></pre>
+
+      Here let's try and generate compile_commands for postgres project
+      <pre><code>git clone https://github.com/postgres/postgres
+cd postgres
+bear -- ./configure
+bear -- make 
+</code></pre>
+      but bear generates the compile command entries with <code>output</code> field. This is currently
+      is not supported by the the woboq parser(see <a
+        href="https://github.com/KDAB/codebrowser/issues/94">issue-94</a>).
+
+      <p>
+        In order to get compile commands in the older format, we can try <a
+          href="https://github.com/rizsotto/Bear/issues/196#issuecomment-691748584">workaround</a> mentioned by
+        creator of bear(rizsotto).
+        So instead of just say <code>bear -- make</code> we need to do
+      </p>
+      <pre><code>intercept --output commands.json -- make
+citnames --input commands.json --output compile_commands.json --config config.json
+</code></pre>
+
+      where contents of <code>config.json</code> are
+      <pre><code>{
+    "compilation": {},
+    "output": {
+        "content": {
+            "include_only_existing_source": true
+        },
+        "format": {
+            "command_as_array": false,
+            "drop_output_field": true
+        }
+    }
+}</code></pre>
+    </li>
+  </ul>
+
+  <h2 id="generate">3. Run woboq generators <a href="#generate"></a></h2>
+
+  Now we can generate browsable code files for our project
+
+  <pre><code>OUTPUT_DIRECTORY=~/public_html/postgres
+DATA_DIRECTORY=$OUTPUT_DIRECTORY/../data
+mkdir -p $OUTPUT_DIRECTORY
+mkdir -p $DATA_DIRECTORY
+
+
+BUILD_DIRECTORY=$PWD
+SOURCE_DIRECTORY=$PWD
+VERSION=`git describe --always --tags`
+
+codebrowser_generator -b $BUILD_DIRECTORY -a \
+-o $OUTPUT_DIRECTORY \
+-p postgres:$SOURCE_DIRECTORY:$VERSION
+
+
+codebrowser_indexgenerator $OUTPUT_DIRECTORY
+</code></pre>
+  Copy required css/js files
+
+  <pre><code>cp -rv /usr/share/woboq/data/.* $DATA_DIRECTORY/</code></pre>
+  Alternatively, we can also use the latest css/js files from woboq repository
+  <pre><code>git clone https://github.com/KDAB/codebrowser
+cd codebrowser
+cp -rv data/.* $DATA_DIRECTORY/</code></pre>
+
+  <h2 id="serve">4. Start a webserver <a href="#serve"></a></h2>
+
+  <pre>
+<code>cd ~/public_html
+python3 -m http.server 8000</code>
+</pre>
+
+  Now we can browse through generated files :)
+
+
+</body>
+
+</html>

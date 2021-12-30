@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>incron-rclone-sync</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../css/sp.css">
+</head>
+
+<body>
+  <h1>incron and rclone for syncing screenshots to google drive on linux</h1>
+  <p>
+    I frequently take screenshots in my laptop & use them to recall 
+    what I had read and worked on (kind of like Anki notes). I wanted to automatically 
+    sync my screenshots to google-drive to look at my laptop screenshots on my phone when I am on the go.
+  </p>
+
+  <p>
+    Since ubuntu automatically stores screenshots in <code>Pictures</code> folder,
+    To automatically watch for new file creation in Pictures folder I used <code>incron</code>(<b>i</b>node <b>n</b>otify <b>cron</b>) 
+    and to sync them to google-drive I used <code>rclone</code>.
+  </p>
+
+  <ul>
+
+    <li>
+      To set-up rclone for google-drive, refer to instructions at <a href="https://rclone.org/drive/">rclone.org/drive/</a>.
+    </li>
+    <li>
+      To setup incrontab, refer to instructions 
+      <a href="https://www.howtoforge.com/tutorial/trigger-commands-on-file-or-directory-changes-with-incron/">here</a>
+      <br>
+      In short, 
+      <pre><code>$ incrontab -e</code></pre>
+      Add the following line
+      <pre><code>/home/jkl/Pictures IN_CREATE /usr/bin/rclone sync /home/jkl/Pictures google:photos</code></pre>
+    </li>
+  </ul>
+
+</body>
+
+</html>

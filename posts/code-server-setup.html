@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>code-server setup</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../css/sp.css">
+</head>
+<body>
+<h1>code-server setup</h1>
+
+
+1. Install code-server to run VS Code on your development machine to access it in the browser
+<a href="https://github.com/cdr/code-server">https://github.com/cdr/code-server</a>
+<pre><code>curl -fsSL https://code-server.dev/install.sh | sh</code></pre>
+
+2. Add the following line to your .bashrc to run code-server irrespective of the present working directory
+
+<pre><code>PATH="$HOME/.local/bin:$PATH"</code></pre>
+
+
+3. Run code-server for the first time to create default config file config.yaml
+<pre>
+<code>$ code-server
+[2021-09-15T06:02:37.256Z] info code-server 3.11.1 c680aae973d83583e4a73dc0c422f44021f0140e
+[2021-09-15T06:02:37.258Z] info Using user-data-dir ~/.local/share/code-server
+[2021-09-15T06:02:37.279Z] info Using config file ~/.config/code-server/config.yaml
+[2021-09-15T06:02:37.280Z] info HTTP server listening on http://10.173.169.180:8080
+[2021-09-15T06:02:37.280Z] info - Authentication is enabled
+[2021-09-15T06:02:37.280Z] info - Using password from ~/.config/code-server/config.yaml
+[2021-09-15T06:02:37.280Z] info - Not serving HTTPS</code>$
+</pre>
+
+now stop the code-server (ctrl+c).
+
+<br>
+<br>
+4. Change the bind address to hostname:port in the config file (~/.config/code-server/config.yaml).
+In place of hostname, we can directly use ip-address as well.
+
+<pre>
+<code>  bind-addr: debian.corp:8080
+  auth: password
+  password: yourpassword
+  cert: false</code>
+</pre>
+
+To get the full hostname you could use hostname command
+<pre><code>$ hostname -f
+  host.domain.corp</code>
+</pre>
+  Now you can start the code-server and access it using the bind-addr as url in your browser
+
+<br>
+<br>
+
+5. Add custom key-shortcuts to <code>~/.local/share/code-server/User/keybindings.json</code>
+<br>
+For example, I use <code>CTRL+B</code> to navigate to function declaration/definition. 
+<pre>
+<code>[
+  {
+          "key": "ctrl+b",
+          "command": "editor.action.revealDefinition",
+          "when": "!terminalFocus"
+  },
+]</code>
+</pre>
+
+6. Install language specific extensions for code browsing, autocompletion support.
+<br>
+C/C++ - <a href="https://clangd.llvm.org/installation">clangd</a>
+<br>
+Python - <a href="https://marketplace.visualstudio.com/items?itemName=ms-python.python">ms-python</a>  
+
+
+
+<h3>Troubleshooting:</h3>
+
+Note 1 - Sometimes you tend to get ENOSPC error while running code-server, to solve it please run the following
+<pre>
+<code>$ echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
+$ sudo sysctl -p</code>
+</pre>
+
+
+
+Note 2 - Sometimes the extensions (autocompletion etc) stop working in the middle of a session.
+In these cases stop, and restart the code-server.
+
+<br>
+<br>
+Note 3 - Sometimes you get the "vscode is not running" error when starting code-server.
+To fix this you need to close the browser tabs which have code-server url and then start the code-server.
+<pre>
+[2021-09-16T12:08:48.372Z] error vscode is not running Error: vscode is not running
+at VscodeProvider.send (/ssd5-perf2/home/i523429/.local/lib/code-server-3.12.0/out/node/vscode.js:121:19)
+at VscodeProvider.sendWebsocket (/ssd5-perf2/home/i523429/.local/lib/code-server-3.12.0/out/node/vscode.js:117:14)
+at async /ssd5-perf2/home/i523429/.local/lib/code-server-3.12.0/out/node/routes/vscode.js:205:5
+</pre>
+</body>
+</html>
+

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Development Environmet setup</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../css/sp.css">
+</head>
+
+<body>
+  <h1>Development Environmet setup</h1>
+
+  <h2 id="cpp">For C/C++<a href="#cpp"></a></h2>
+  <ul>
+    <li> <b>C/C++ with vscode/codeserver</b> : If we are using <a href="code-server-setup.html">codeserver/vscode</a>
+      with clangd extenstion,
+      we need to first generate compilation database (<code>compile_commands.json</code>)
+
+     <ul>
+       <li>
+         <p>
+      For CMAKE projects, we can use the following while building
+      <pre><code>$ cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON . </code></pre>
+
+      Alternatively, we can add the following in CMakeList.txt
+      <pre><code>set(CMAKE_EXPORT_COMPILE_COMMANDS ON)</code></pre>
+    </p>
+    </li>
+    <li>
+      <p>
+        For MAKE projects on Linux, there is an alternative to intercept compiler calls
+        with a tool called <a href="https://github.com/rizsotto/Bear">Bear</a> (Build EAR).
+      <pre><code>sudo apt install bear</code></pre>
+
+      In our project folder, we can use the following to generate compile_commands.json
+      <pre><code>bear -- ./configure
+bear -- make </code>
+</pre>
+      </p>
+
+      <p>but bear generates the compile command entries with <code>output</code> field. 
+      The clangd extension might not work correctly with the newer entries </p
+
+      <p>
+        In order to get compile commands in the older format, we can try <a
+          href="https://github.com/rizsotto/Bear/issues/196#issuecomment-691748584">workaround</a> mentioned by
+        creator of bear(rizsotto).
+        So instead of just say <code>bear -- make</code> we need to do
+      </p>
+      <pre><code>intercept --output commands.json -- make
+citnames --input commands.json --output compile_commands.json --config config.json
+</code></pre>
+
+      where contents of <code>config.json</code> are
+      <pre><code>{
+    "compilation": {},
+    "output": {
+        "content": {
+            "include_only_existing_source": true
+        },
+        "format": {
+            "command_as_array": false,
+            "drop_output_field": true
+        }
+    }
+}</code></pre>
+</li>
+</ul>
+      For more details on how to generate compilation database, refer to
+      <a href="https://sarcasm.github.io/notes/dev/compilation-database.html">
+        sarcasm.github.io/notes/dev/compilation-database.html</a>
+    </li>
+
+
+
+    <li><b>C/C++ with QtCreator</b></li>
+    <li><b>C/C++ with Clion</b></li>
+  </ul>
+
+  <h2>For Python</h2>
+  <li><b>Python with vscode</b></li>
+  <li><b>Python with PyCharm</b></li>
+
+  <h2>For Rust</h2>
+  <li><b>Rust with vscode</b></li>
+  <li><b>Rust with Clion(IntelliJ)</b></li>
+
+  <h2>For Web - Javascript, Typescript, CSS, html...</h2>
+  <li><b>web with vscode</b></li>
+  <li><b>web with webstorm</b></li>
+
+
+  <h2>Cosmetics - color themes etc</h2>
+  <li><b>IntelliJ Based IDEs</b></li>
+
+  <!-- TODO:
+group by editor/ide? 
+group by language? -->
+</body>
+
+</html>

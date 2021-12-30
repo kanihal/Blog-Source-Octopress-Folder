@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Migrate all your bitbucket repos to github</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../css/sp.css">
+</head>
+
+<body>
+  <h1>Migrate all your bitbucket repos to github</h1>
+  <ol>
+    <li>
+      Add ssh keys to your bitbucket and github accounts.<br>
+      Refer: <a href="https://confluence.atlassian.com/bitbucket/set-up-an-ssh-key-728138079.html#SetupanSSHkey-ssh2">for bitbucket</a>,
+       <a href="https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/">for github</a> 
+    </li>
+    <li>
+      Generate <a href="https://github.com/blog/1509-personal-api-tokens">github token</a> for reading repo info 
+      and read/write permission for creating repos (you can give all permission except delete)
+    </li>
+    <li>
+      Use  script <code>bb2gh.py</code> from <a href="https://github.com/nmi/bb2gh">github.com/nmi/bb2gh</a> 
+    </li>
+  </ol>
+</body>
+
+</html>

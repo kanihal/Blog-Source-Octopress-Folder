@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Clipboard Append</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../css/sp.css">
+</head>
+
+<body>
+  <h1>Clipboard Append</h1>
+  I wanted to append content to clipboard without overwriting it.
+  Here is the script <code>clip_append_n.sh</code> which essentially does that.
+<pre>
+<code>#!/bin/bash
+# text under selction i.e. highlighted
+p=$(xclip -selection primary -o)
+
+# text already in the clipboard , (what happens if there is image in clipboard?)
+c=$(xclip -selection clipboard -o)
+
+# seperator
+sep=$'\n'
+echo "$c$sep$p" | xclip -selection clip
+notify-send --expire-time=1000 "ClipAppend" "Appended with newline"
+
+# ubuntu ignores that expire time option hence - workaround hack
+sleep 1
+pkill notify-osd</code>  
+</pre>
+Install xclip if not already installed.
+<pre><code>sudo apt install xclip</code></pre>
+Add keyboard shortcut to run this script by naviating to<br>
+System settings -> Keyboard and click on Shortcuts tab, 
+then click on <code>+</code> sign to define your key combination.
+In the command field, add the following 
+<pre><cod>bash -c 'bash ~/clip_append_n.sh' </cod></pre>
+
+<p>
+I currently use <code>ALT+N</code> to trigger the action appending 
+highlighted content to clipboard with a <i>newline</i> as a seperator.
+</p>
+
+<p>On ubuntu 20</p>
+<img src="2017/clip_ubuntu20.png"/>
+<p>
+  Similarly, we can duplicate the above script with different seperators (<code>\s, \t</code>) and 
+  can use <code>ALT+S</code>, <code>ALT+T</code> to trigger the action of appending 
+  highlighted content to clipboard with a <i>space</i>, <i>tab</i> as a seperators respectively.
+</p>
+</body>
+
+</html>

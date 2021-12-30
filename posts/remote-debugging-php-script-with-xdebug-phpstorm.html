@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Save screenshots every N seconds</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../css/sp.css">
+</head>
+<body>
+<h1>Save screenshots periodically every <code>N</code> seconds</h1>
+
+<h2 id="windows">On Windows<a href="#windows"></a></h2>
+<p>
+  On windows, we can use <a href="https://www.nirsoft.net/utils/nircmd.html">nircmd</a> 
+  to take screenshots periodically and save them using batch script that looks like the
+  following script <code>screenshot.bat</code>.
+  Here we take a screenshot every 150 seconds (2.5 minutes)  
+  and save it to <code>Downloads\screenshots</code> folder with timestamp as screenshot filename.
+</p>
+
+<pre>
+<code>@echo off
+setlocal
+:repeat
+nircmd.exe savescreenshotfull c:\Users\i523429\Downloads\screenshots\~$currdate.MM_dd_yyyy$-~$currtime.HH_mm_ss$.png
+timeout /t 150 /nobreak > NUL
+goto :repeat</code>
+</pre>
+
+<p>
+  To run the above script on startup, we can add the the above batchscript 
+  to windows startup folder. We can press <code>WINDOWS_KEY + R </code> and 
+  run <code>shell:startup</code>, this will take you to startup folder with path
+  that looks like <br><code>C:\Users\i523429\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup</code>
+</p>
+
+</body>
+<h2 id="linux">On Linux<a href="#linux"></a></h2>
+<h2 id="android">On Android<a href="#android"></a></h2>
+<h2 id="mac">On Mac<a href="#mac"></a></h2>
+<h2 id="ios">On iOS<a href="#ios"></a></h2>
+</html>
+
