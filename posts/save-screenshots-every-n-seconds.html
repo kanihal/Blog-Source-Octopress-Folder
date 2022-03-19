@@ -76,10 +76,34 @@ done</code>
 
   </p>
 
+  <h2 id="mac">On Mac<a href="#mac"></a></h2>
+  <p>
+    On Mac, we use the system utility called <code>screencapture</code>.
+    If we have  multiple displays connected, we can store each display content in a seperate image.
+    I currently do not know if there is flag for screencapture to make all the content to capture in a single image.
+  </p>
+  <pre>
+<code>#!/usr/bin/bash
+while true
+do
+    dir1="/Users/I523429/Downloads"
+    folder="$dir1/screenshots/$(date +%Y-%m-%d)"
+    mkdir -p $folder
+    num_displays=$(system_profiler SPDisplaysDataType | grep -c Resolution)
+
+    for i in $(seq 1 $num_displays)
+    do
+        file="$(date +%Y-%m-%d-%H%M%S)_$i.png"
+        screencapture -x -D $i "$folder/$file"
+    done
+    sleep 150
+done</code>
+</pre>
+
+
   <!-- TODO -->
 
   <h2 id="android">On Android<a href="#android"></a></h2>
-  <h2 id="mac">On Mac<a href="#mac"></a></h2>
   <h2 id="ios">On iOS<a href="#ios"></a></h2>
 
 </body>
